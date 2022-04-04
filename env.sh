@@ -5,12 +5,12 @@ eval `ssh-agent -s` && ssh-add -k
 
 ###################### GIT PARAMETERS #####################################
 export GIT_PARENT_DIR=~
-export GIT_REPO_NAME=#your-repo
-export GIT_BRANCH_NAME=#your-branch
-export GIT_USER=#your-gituser
-export GIT_EMAIL=#your-email
-export GITHUB_ACCESS_TOKEN=#access-token from github developer settings
-export GIT_USER_UPSTREAM=#your-user
+export GIT_REPO_NAME=whatareview
+export GIT_BRANCH_NAME=main
+export GIT_USER=adamameen5
+export GIT_EMAIL=adamameen5@gmail.com
+export GITHUB_ACCESS_TOKEN=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
+export GIT_USER_UPSTREAM=adamameen5
 
 
 ############################################################################
