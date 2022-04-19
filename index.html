@@ -67,10 +67,12 @@
                 <textarea name="message" id="message" cols="120" rows="1"></textarea>
             </div>
             <button onclick="summarizeReview()" class="btn-primary">Summarize Review Now</button>
+            <button onclick="detectSarcasm()" class="btn-primary">Detect Sarcasm</button>
             <h4>Original Review</h4>
             <p id="yourReview" style="border:1px solid"></p>
             <h4>Summarized Review</h4>
             <p id="summarizedReview" style="border:1px solid"></p>
+            <p id="statusBar" style="border:1px solid">status</p>
         </div>
         <div id="status"></div>
 
@@ -106,6 +108,37 @@
             var textSum = document.getElementById("message").value;
             document.getElementById("summarizedReview").innerHTML = users;
             document.getElementById("yourReview").innerHTML = textSum;
+            console.log(users)
+        }
+
+
+        //sarcasm detection
+        async function sendReview() {
+            var textSum = document.getElementById("message").value;
+            let url = 'http://127.0.0.1:8000/detectSarcasm/';
+            try {
+                let res = await fetch(url + textSum);
+                return await res.json();
+            } catch (error) {
+                console.log(error);
+            }
+
+            document.getElementById("yourReview").innerHTML = textSum;
+        }
+
+        async function detectSarcasm() {
+            document.getElementById("statusBar").innerHTML = "Detecting";
+            let users = await sendReview();
+            document.getElementById("statusBar").innerHTML = "Detected";
+            var textSum = document.getElementById("message").value;
+            document.getElementById("summarizedReview").innerHTML = users;
+            document.getElementById("yourReview").innerHTML = textSum;
+
+            if (users == "It's a sarcasm!") {
+                document.getElementById("summarizedReview").innerHTML = "Sarcastic review";
+            } else {
+                document.getElementById("summarizedReview").innerHTML = "Not A Sarcastic review";
+            }
             console.log(users)
         }
     </script>
