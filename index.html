@@ -15,6 +15,14 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="css/styles.css" rel="stylesheet" />
+
+    <!-- Bootstrap core CSS -->
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/features/">
+
+    <script src='https://code.jquery.com/jquery-3.1.1.min.js'></script>
+
+
+
 </head>
 
 <body>
@@ -22,124 +30,85 @@
     <nav class="navbar navbar-light bg-light static-top">
         <div class="container">
             <a class="navbar-brand" href="#!">What A Review!</a>
-            <a class="btn btn-primary" href="#signup">Write A Review</a>
+            <a class="btn btn-primary" href="#writeReview">Write A Review</a>
         </div>
     </nav>
 
-    <!-- <header class="masthead">
-        <div class="container position-relative">
-            <div class="row justify-content-center">
-                <div class="col-xl-12">
+    <main class="container" id="writeReview">
+        <div class="bg-light p-5 mt-5 rounded">
+            <h2>Type Your Review Here</h2>
+            <p class="lead">Once you type your review, click the submit button to perform text-summarization and sarcasm detection.</p>
+            <textarea name="message" id="message" style="width:100%" rows="11"></textarea>
+            <button onclick="summarizeReview()" class="btn btn-primary">Submit</button>
+        </div>
+    </main>
 
-                    <div class="text-center text-white">
-                        <h1 class="mb-5">Search and write reviews easily!</h1>
-                        <form class="form-subscribe" id="contactForm" data-sb-form-api-token="API_TOKEN">
-                            <div class="row">
-                                <div class="col">
-                                    <input class="form-control form-control-lg" id="emailAddress" type="email" placeholder="Search for restaurant" data-sb-validations="required,email" />
-                                    <div class="invalid-feedback text-white" data-sb-feedback="emailAddress:required">Email Address is required.</div>
-                                    <div class="invalid-feedback text-white" data-sb-feedback="emailAddress:email">Email Address Email is not valid.</div>
-                                </div>
-                                <div class="col-auto"><button class="btn btn-primary btn-lg" id="submitButton" type="submit" onclick="sendReview()">Search</button></div>
-                            </div>
-                            <div class="d-none" id="submitSuccessMessage">
-                                <div class="text-center mb-3">
-                                    <div class="fw-bolder">Form submission successful!</div>
-                                    <p>To activate this form, sign up at</p>
-                                    <a class="text-white" href="https://startbootstrap.com/solution/contact-forms">https://startbootstrap.com/solution/contact-forms</a>
-                                </div>
-                            </div>
-                            <div class="d-none" id="submitErrorMessage">
-                                <div class="text-center text-danger mb-3">Error sending message!</div>
-                            </div>
-                        </form>
-                    </div>
-
-                </div>
+    <main class="container">
+        <div class="row m-1">
+            <div class="bg-light p-5 mt-4 rounded col-md-8">
+                <h2>Summary of the text you typed</h2>
+                <p class="lead">This is not the actual summary. This is based on NLP algorithms. So there can be mistakes.</p>
+                <textarea disabled id="summarizedReview" style="width:100%;" rows="10"></textarea>
+            </div>
+            <div class="bg-light p-5 mt-4 rounded col-md-4">
+                <h2>Sarcasm Detector</h2>
+                <p id="sarcasmDetectedTitle">This detector is based on Machine Learning algorithms. Therefore, the prediction would not be 100% accurate.</p>
+                <button disabled class="btn-warning" id="sarcasmDetectedButton" style="width:100%;height:auto">Not Detected</button>
             </div>
         </div>
-    </header> -->
-
-    <section>
-        <div class="container">
-            <div class="form-group">
-                <label for="message">Type Your Review Here</label>
-                <textarea name="message" id="message" cols="120" rows="1"></textarea>
-            </div>
-            <button onclick="summarizeReview()" class="btn-primary">Summarize Review Now</button>
-            <button onclick="detectSarcasm()" class="btn-primary">Detect Sarcasm</button>
-            <h4>Original Review</h4>
-            <p id="yourReview" style="border:1px solid"></p>
-            <h4>Summarized Review</h4>
-            <p id="summarizedReview" style="border:1px solid"></p>
-            <p id="statusBar" style="border:1px solid">status</p>
-        </div>
-        <div id="status"></div>
-
-    </section>
+    </main>
 
 
-    <!-- Bootstrap core JS-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Core theme JS-->
-    <script src="js/scripts.js"></script>
-    <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-    <!-- * *                               SB Forms JS                               * *-->
-    <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
-    <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-    <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
 
     <script>
-        async function sendReview() {
+        async function summarizeReview() {
+            let summarizedReview = await sendReviewToSummarize();
             var textSum = document.getElementById("message").value;
+            if (summarizeReview.length == 0) {
+                document.getElementById("summarizedReview").innerHTML = "Your review is too small to be summarized.";
+            } else {
+                document.getElementById("summarizedReview").innerHTML = summarizedReview;
+            }
+
+            console.log(summarizedReview)
+            detectSarcasm();
+        }
+
+
+        async function sendReviewToSummarize() {
+            var actualReview = document.getElementById("message").value;
             let url = 'http://127.0.0.1:8000/summarize/';
             try {
-                let res = await fetch(url + textSum);
+                let res = await fetch(url + actualReview);
                 return await res.json();
             } catch (error) {
                 console.log(error);
             }
-
-            document.getElementById("yourReview").innerHTML = textSum;
-        }
-
-        async function summarizeReview() {
-            let users = await sendReview();
-            var textSum = document.getElementById("message").value;
-            document.getElementById("summarizedReview").innerHTML = users;
-            document.getElementById("yourReview").innerHTML = textSum;
-            console.log(users)
         }
 
 
         //sarcasm detection
         async function sendReview() {
-            var textSum = document.getElementById("message").value;
+            var actualReview = document.getElementById("message").value;
             let url = 'http://127.0.0.1:8000/detectSarcasm/';
             try {
-                let res = await fetch(url + textSum);
+                let res = await fetch(url + actualReview);
                 return await res.json();
             } catch (error) {
                 console.log(error);
             }
-
-            document.getElementById("yourReview").innerHTML = textSum;
         }
 
         async function detectSarcasm() {
-            document.getElementById("statusBar").innerHTML = "Detecting";
-            let users = await sendReview();
-            document.getElementById("statusBar").innerHTML = "Detected";
-            var textSum = document.getElementById("message").value;
-            document.getElementById("summarizedReview").innerHTML = users;
-            document.getElementById("yourReview").innerHTML = textSum;
-
-            if (users == "It's a sarcasm!") {
-                document.getElementById("summarizedReview").innerHTML = "Sarcastic review";
+            let sarcasmIdentifier = await sendReview();
+            if (sarcasmIdentifier == "It's a sarcasm!") {
+                $("#sarcasmDetectedButton").html("Sarcasm Detected");
+                $("#sarcasmDetectedButton").removeClass('btn-warning').addClass('btn-primary');
             } else {
-                document.getElementById("summarizedReview").innerHTML = "Not A Sarcastic review";
+                $("#sarcasmDetectedButton").html("Sarcasm Not Detected");
+                $("#sarcasmDetectedButton").removeClass('btn-success').addClass('btn-warning');
             }
-            console.log(users)
+            console.log(sarcasmIdentifier)
         }
     </script>
 </body>
