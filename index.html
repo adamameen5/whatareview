@@ -64,7 +64,7 @@
         async function summarizeReview() {
             let summarizedReview = await sendReviewToSummarize();
             var textSum = document.getElementById("message").value;
-            if (summarizeReview.length == 0) {
+            if (summarizedReview.length == 0) {
                 document.getElementById("summarizedReview").innerHTML = "Your review is too small to be summarized.";
             } else {
                 document.getElementById("summarizedReview").innerHTML = summarizedReview;
