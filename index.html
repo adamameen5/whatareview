@@ -45,15 +45,19 @@
 
     <main class="container">
         <div class="row m-1">
-            <div class="bg-light p-5 mt-4 rounded col-md-8">
+            <div class="bg-light p-5 mt-4 rounded col-md-7">
                 <h2>Summary of the text you typed</h2>
                 <p class="lead">This is not the actual summary. This is based on NLP algorithms. So there can be mistakes.</p>
-                <textarea disabled id="summarizedReview" style="width:100%;" rows="10"></textarea>
+                <textarea disabled id="summarizedReview" style="width:100%;" rows="10" placeholder="Please enter your review."></textarea>
             </div>
-            <div class="bg-light p-5 mt-4 rounded col-md-4">
+            <div class="bg-light p-5 mt-4 rounded col-md-5">
                 <h2>Sarcasm Detector</h2>
                 <p id="sarcasmDetectedTitle">This detector is based on Machine Learning algorithms. Therefore, the prediction would not be 100% accurate.</p>
-                <button disabled class="btn-warning" id="sarcasmDetectedButton" style="width:100%;height:auto">Not Detected</button>
+                <button disabled class="btn-success" id="sarcasmDetectedButton" style="width:100%;height:auto">Please enter your review.</button>
+                <br><br>
+                <h2>Our Rating For Your Review</h2>
+                <p>This rating is based on Machine Learning algorithms. Therefore, the prediction would not be 100% accurate.</p>
+                <h4 id="ratingDetected" style="border: 1px rgb(179, 179, 179) solid;">No Review Posted Yet!</h4>
             </div>
         </div>
     </main>
@@ -72,6 +76,7 @@
 
             console.log(summarizedReview)
             detectSarcasm();
+            getRating();
         }
 
 
@@ -103,12 +108,31 @@
             let sarcasmIdentifier = await sendReview();
             if (sarcasmIdentifier == "It's a sarcasm!") {
                 $("#sarcasmDetectedButton").html("Sarcasm Detected");
-                $("#sarcasmDetectedButton").removeClass('btn-warning').addClass('btn-primary');
+                $("#sarcasmDetectedButton").removeClass('btn-success').addClass('btn-warning');
             } else {
                 $("#sarcasmDetectedButton").html("Sarcasm Not Detected");
-                $("#sarcasmDetectedButton").removeClass('btn-success').addClass('btn-warning');
+                $("#sarcasmDetectedButton").removeClass('btn-warning').addClass('btn-success');
             }
             console.log(sarcasmIdentifier)
+        }
+
+
+        //rating calculation
+        async function sendReviewToGetRating() {
+            var actualReview = document.getElementById("message").value;
+            let url = 'http://127.0.0.1:8000/getRating/';
+            try {
+                let res = await fetch(url + actualReview);
+                return await res.json();
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        async function getRating() {
+            let ratingGenerated = await sendReviewToGetRating();
+            console.log(ratingGenerated)
+            document.getElementById("ratingDetected").innerHTML = ratingGenerated;
         }
     </script>
 </body>
